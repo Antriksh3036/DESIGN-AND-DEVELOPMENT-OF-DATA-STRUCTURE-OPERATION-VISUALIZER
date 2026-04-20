@@ -328,3 +328,77 @@ if st.session_state["page"] == "interactive_array":
                 {" ".join(str(x) for x in st.session_state["nodes"])}
             }}
         ''')
+
+if st.session_state["page"] == "insert_at_beginning":
+    with col2:
+        st.title(":blue[Array Insertion]")
+        st.header(":red[Insert at beginning]")
+        st.write("To insert an element at the beginning of an array, all existing elements must be shifted one position to the right to make space for the new value at index 0.  This operation is necessary because arrays store elements in continuous memory locations, leaving no gap at the start for direct insertion.")
+        st.subheader(":green[Algorithm:]")
+        st.code('''
+Initialize: Define the array, current size, maximum capacity, and the new element. 
+
+Check Space: Verify if current_size < max_capacity.
+
+Shift Elements: Iterate from the last element down to the insertion index (0), moving each element to the next position (array[i+1] = array[i]). 
+
+Insert: Assign the new value to the first position (array[0] = new_element). 
+
+Update Size: Increment the size counter (size = size + 1)
+        ''',language=None,wrap_lines=True)
+        st.subheader(":green[Code:]")
+        st.code('''
+#include <stdio.h>
+
+int main() {
+    int arr[] = {10, 20, 30, 40, 0}; // Array with extra space for insertion
+    int n = 4; // Current number of elements
+    int element = 50; // Element to insert
+
+    printf("Array before insertion:\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+
+    // Shift elements to the right
+    for (int i = n - 1; i >= 0; i--) {
+        arr[i + 1] = arr[i];
+    }
+
+    // Insert the new element at the beginning
+    arr[0] = element;
+
+    printf("\nArray after insertion:\n");
+    for (int i = 0; i <= n; i++) {
+        printf("%d ", arr[i]);
+    }
+
+    return 0;
+}   
+        ''',language="c")
+        st.warning('''Time Complexity: The operation runs in O(n) time because every existing element must be moved. ''')
+        st.warning('''Space Requirement: The array must be declared with a size one greater than the current number of elements to accommodate the new item without overflow.''')
+
+    with col3:
+
+        if st.button("Insert at beginning"):
+            insert_at_beginning = load_lottiefile("insert_at_beginning.json")
+            st_lottie(
+                insert_at_beginning,
+                width = 250,
+                loop=False,
+                key = "insatbeg",
+            )
+            st.write(":green[Initialize: Define the array, current size, maximum capacity, and the new element. ]")
+            st.write(":green[Check Space: Verify if current_size < max_capacity.]")
+            time.sleep(2.2)
+            st.write(":green[Shift Elements: Iterate from the last element down to the insertion index (0), moving each element to the next position (array[i+1] = array[i]).]")
+            time.sleep(1)
+            st.write(":green[Insert: Assign the new value to the first position (array[0] = new_element).]")
+            time.sleep(1.5)
+            st.write(":green[Update Size: Increment the size counter (size = size + 1)]")
+
+            time.sleep(4.5)
+            st.rerun()
+        else:
+            st.image("insert_at_beginning.png",width=250)

@@ -459,7 +459,6 @@ with col1:
     value_input    = st.text_input("Value", placeholder="e.g. 42 or hello")
     index_input    = st.number_input("Index", min_value=0, step=1, value=0)
     traverse_speed = st.slider("Traversal speed (s / node)", 0.1, 2.0, 0.7, 0.1)
-    show_pseudo    = st.checkbox("Show pseudocode", value=True)
 
     if st.button("▶  Execute", use_container_width=True):
         ll = get_ll()

@@ -1,137 +1,157 @@
 import streamlit as st
 import time
+import graphviz
 
-st.set_page_config(page_title="Data Structure : Stack", layout="wide")
-MAX_SIZE = 5
 
-st.markdown("""
-<style>
-    .highlight-code { background-color: #ffff00; color: black; padding: 5px; border-radius: 5px; font-weight: bold; }
-    .theory-box { background-color: #f0f2f6; padding: 20px; border-radius: 10px; border-left: 5px solid #ff4b4b; }
-</style>
-""", unsafe_allow_html=True)
+st.set_page_config(page_title="Stacks using Linked List", layout="wide")
 
-if 'stack' not in st.session_state:
-    st.session_state.stack = []
+if 'll_stack' not in st.session_state:
+    st.session_state.ll_stack = []
 if 'current_line' not in st.session_state:
     st.session_state.current_line = -1
 
-page = st.sidebar.radio("Go to", [" Theory", " Visualizer", " Quiz"])
 
-if page == " Theory":
-    st.title("Stack Data Structure")
-    st.markdown("""
-    ### What is a Stack?
-    A **Stack** A Stack is a linear data structure that follows a particular order in which the operations are performed. The order may be LIFO(Last In First Out) or FILO(First In Last Out). LIFO implies that the element that is inserted last, comes out first and FILO implies that the element that is inserted first, comes out last.It is an abstract data type that serves as a collection of elements, with two main operations:
-    * **Push**: Adds an element to the collection.
-    * **Pop**: Removes the most recently added element that was not yet removed.
-    * Other stack operations include:
-    * **Peek/Top**: Returns the most recently added element without removing it.            
-    """)
-    
-    st.info("The order in which elements come out of a stack gives rise to its alternative name, **LIFO** (last in, first out).")
-    
-    with st.expander("See Real-world Relation"):
-        st.write("Think of a stack of dinner plates. You add a new plate to the **top**, and when you need one, you take it off the **top**. You cannot safely take a plate from the middle!")
+page = st.sidebar.radio("Navigation", ["Theory", "Visualizer", "Quiz"])
+
+
+if page == "Theory":
+    st.title("Stacks using Linked List")
+
+    with st.container():
+        st.markdown('<div class="theory-section">', unsafe_allow_html=True)
+        st.subheader("What is a Linked Stack?")
+        st.write("""
+        A Stack implemented using a Linked List is a dynamic data structure. Unlike array-based stacks,
+        it does not require a pre-defined capacity. Each element is a **Node** consisting of two parts:
+        1. **Data**: The value stored in the stack.
+        2. **Next**: A pointer/reference to the next node in the stack.
+        """)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader("Core Operations")
+        st.write("""
+        - **Push**: A new node is created. Its 'next' points to the current Top, and Top is updated to this new node.
+        - **Pop**: The Top pointer is moved to the next node in the sequence (`Top = Top->next`). The old memory is freed.
+        - **Is Empty**: If the Top pointer is NULL, the stack is empty.
+        """)
+
+    with col2:
+        st.subheader("Advantages")
+        st.write(" **Dynamic Size**: Grows and shrinks at runtime.")
+        st.write(" **No Overflow**: Overflow only occurs if the system runs out of heap memory.")
+        st.write(" **Efficiency**: Insertion and deletion are always $O(1)$.")
+
 
 elif page == " Visualizer":
-    st.title("Stack Visualizer")
+    st.title("Interactive Linked Stack")
 
-    def get_stack_diagram():
-        
-        dot_code = 'digraph G {\n'
-        dot_code += '  graph [bgcolor=transparent];\n'
-        dot_code += '  node [shape=record, fontname="Helvetica", fontsize=18, width=4, height=0.8, style=filled];\n'
-        
-        if not st.session_state.stack:
-            label = "Empty Stack"
-            dot_code += f'  stack [label="{label}", fillcolor="#f1f1f1", fontcolor="#888888"];\n'
+    def generate_stack_image():
+
+        dot = graphviz.Digraph(format='png')
+        dot.attr(rankdir='LR', bgcolor='transparent')
+
+
+        dot.attr('node', fontname='Helvetica', fontcolor='white', color='white')
+
+        if not st.session_state.ll_stack:
+            dot.node('n_null', 'NULL', shape='none')
+            dot.edge('Top', 'n_null', color='#FF4B4B', penwidth='2')
         else:
-           
-            items = [f" {val} " + (" (TOP)" if i == 0 else "") 
-                     for i, val in enumerate(reversed(st.session_state.stack))]
-            label = "{ " + " | ".join(items) + " }"
-            dot_code += f'  stack [label="{label}", fillcolor="#458588", fontcolor="white"];\n'
-        
-        dot_code += '}'
-        return dot_code
+            dot.node('Top', 'Top', shape='none')
 
-    col_vis, col_code = st.columns([1.2, 1])
+            for i, val in enumerate(st.session_state.ll_stack):
+                dot.node(f'node{i}', f'{{ {val} | next }}', shape='record',
+                         style='filled', fillcolor='#458588', fontcolor='white', color='white')
 
-    with col_vis:
-        st.subheader("Memory View")
-        st.graphviz_chart(get_stack_diagram(), use_container_width=True)
 
-    with col_code:
-        st.subheader("Step-by-Step Execution")
-        pseudocode = [
-            "function PUSH(val):",
-            "  if stack is full: return OVERFLOW",
-            "  stack.append(val)",
-            "function POP():",
-            "  if stack is empty: return UNDERFLOW",
-            "  return stack.pop()"
+            dot.edge('Top', 'node0', color='#FF4B4B', penwidth='2')
+            for i in range(len(st.session_state.ll_stack) - 1):
+                dot.edge(f'node{i}', f'node{i+1}')
+
+
+            dot.node('null_end', 'NULL', shape='none')
+            dot.edge(f'node{len(st.session_state.ll_stack)-1}', 'null_end')
+
+        return dot.pipe()
+
+    c_vis, c_code = st.columns([1.5, 1])
+
+    with c_vis:
+        st.subheader("Memory Visualization")
+        st.image(generate_stack_image(), use_container_width=True)
+
+    with c_code:
+        st.subheader("Logic Execution")
+        logic = [
+            "struct Node { int data; Node* next; }",
+            "void PUSH(int val) {",
+            "  Node* newNode = new Node(val);",
+            "  newNode->next = Top;",
+            "  Top = newNode;",
+            "}",
+            "void POP() {",
+            "  if (Top == NULL) return UNDERFLOW;",
+            "  Node* temp = Top;",
+            "  Top = Top->next;",
+            "  delete temp;",
+            "}"
         ]
-        
-        for i, line in enumerate(pseudocode):
-            if st.session_state.current_line == i:
-                st.markdown(f'<div class="highlight-code">▶ {line}</div>', unsafe_allow_html=True)
-            else:
-                st.code(line)
+        for i, line in enumerate(logic):
+            style = "highlight-code" if st.session_state.current_line == i else "standard-code"
+            st.markdown(f'<div class="{style}">{line}</div>', unsafe_allow_html=True)
 
     st.divider()
-    input_val = st.text_input("Enter value:", placeholder="e.g. 10")
-    c1, c2, c3 = st.columns(3)
+    val = st.text_input("Enter node value:", placeholder="Data...")
+    b1, b2, b3 = st.columns(3)
 
-    if c1.button("PUSH", use_container_width=True):
-        if len(st.session_state.stack) < MAX_SIZE:
-            if input_val:
-                st.session_state.current_line = 1 
-                time.sleep(0.4)
-                st.session_state.current_line = 2 
-                st.session_state.stack.append(input_val)
-                st.rerun()
-        else:
-            st.error("Stack Overflow!")
+    if b1.button("EXECUTE PUSH", use_container_width=True):
+        if val:
+            st.session_state.current_line = 2
+            time.sleep(0.3)
+            st.session_state.current_line = 4
+            st.session_state.ll_stack.insert(0, val)
+            st.rerun()
 
-    if c2.button("POP", use_container_width=True):
-        if st.session_state.stack:
-            st.session_state.current_line = 4 
-            time.sleep(0.4)
-            st.session_state.current_line = 5 
-            st.session_state.stack.pop()
+    if b2.button("EXECUTE POP", use_container_width=True):
+        if st.session_state.ll_stack:
+            st.session_state.current_line = 7
+            time.sleep(0.3)
+            st.session_state.current_line = 9
+            st.session_state.ll_stack.pop(0)
             st.rerun()
         else:
-            st.error("Stack Underflow!")
-            
-    if c3.button("Reset", use_container_width=True):
-        st.session_state.stack = []
+            st.error("Underflow: No nodes to remove!")
+
+    if b3.button("RESET STACK", use_container_width=True):
+        st.session_state.ll_stack = []
         st.session_state.current_line = -1
         st.rerun()
 
 
-elif page == " Quiz":
-    st.title("Knowledge Check")
-    
+elif page == "Quiz":
+    st.title("Test Your Knowledge")
+
     with st.form("quiz_form"):
-        q1 = st.radio("Which operation adds an element to the stack?", ["Pop", "Peek", "Push"])
-        q2 = st.radio("What is the time complexity of Push/Pop in a stack?", ["O(n)", "O(log n)", "O(1)"])
-        q3 = st.selectbox("Stack is a ____ data structure.", ["LIFO", "FIFO", "LILO"])
-        q4 = st.radio("What is stack underflow?", ["When stack is full", "When stack is empty and pop is attempted", "When stack has one element left"])
-        q5 = st.radio("What happens when you try to push an element onto a full stack?", ["Stack Overflow", "Stack Underflow", "Nothing happens"])
-        submit = st.form_submit_button("Submit Results")
-        
-        if submit:
+        q1 = st.radio("1. What is the time complexity of pushing a node in a Linked Stack?", ["O(1)", "O(n)", "O(log n)"])
+        q2 = st.radio("2. Where does the 'next' pointer of the last node in the stack point?", ["Top", "The previous node", "NULL"])
+        q3 = st.radio("3. Which pointer is updated during a POP operation?", ["Bottom", "Top", "Both"])
+        q4 = st.radio("4. In a Linked List implementation, 'Overflow' usually happens when:", ["The array is full", "Heap memory is exhausted", "Top reaches 0"])
+        q5 = st.radio("5. Does a Linked Stack require contiguous memory locations?", ["Yes", "No"])
+
+        submitted = st.form_submit_button("Submit Answers")
+
+        if submitted:
             score = 0
-            if q1 == "Push": score += 1
-            if q2 == "O(1)": score += 1
-            if q3 == "LIFO": score += 1
-            if q4 == "When stack is empty and pop is attempted": score += 1
-            if q5 == "Stack Overflow": score += 1
-            
-            st.subheader(f"Your Score: {score}/5")
+            if q1 == "O(1)": score += 1
+            if q2 == "NULL": score += 1
+            if q3 == "Top": score += 1
+            if q4 == "Heap memory is exhausted": score += 1
+            if q5 == "No": score += 1
+
             if score == 5:
                 st.balloons()
-                st.success("Perfect Score!")
+                st.success("Perfect Score! 5/5")
             else:
-                st.warning("Review the theory and visualize the stack behavior and try again!")
+                st.warning(f"You got {score}/5 correct. Review the theory and try again!")

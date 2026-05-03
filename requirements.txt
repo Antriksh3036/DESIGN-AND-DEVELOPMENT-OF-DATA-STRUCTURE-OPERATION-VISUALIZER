@@ -2,7 +2,6 @@ streamlit
 streamlit-lottie
 requests
 beautifulsoup4
-urllib
 networkx
 matplotlib
 collections

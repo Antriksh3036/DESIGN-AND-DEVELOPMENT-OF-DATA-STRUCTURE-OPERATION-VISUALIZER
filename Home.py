@@ -123,7 +123,7 @@ with st.sidebar:
         st.switch_page("pages/Linked_List.py")
 
     if page == "📚 Stacks":
-        st.switch_page("pages/Stack.py")
+        st.switch_page("pages/Stack_Using_Array.py")
 
     if page == "➡️ Queue":
         st.switch_page("pages/Queue.py")

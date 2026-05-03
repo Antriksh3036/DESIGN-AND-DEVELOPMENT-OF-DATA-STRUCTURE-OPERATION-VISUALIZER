@@ -42,8 +42,7 @@ if page == "Theory":
         st.subheader("Advantages")
         st.write("Dynamic Size: Grows and shrinks at runtime.")
         st.write("No Overflow: Overflow only occurs if the system runs out of heap memory.")
-        st.write("Efficiency: Insertion and deletion are always 
-.")
+        st.write("Efficiency: Insertion and deletion are always .")
 
 elif page == "Visualizer":
     st.title("Interactive Linked Stack")

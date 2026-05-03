@@ -1,0 +1,17 @@
+streamlit
+json
+streamlit_lottie
+time
+math
+dataclasses
+typing
+uuid
+subprocess
+tempfile
+os
+requests
+bs4
+urllib
+network
+matplotlib
+collections
